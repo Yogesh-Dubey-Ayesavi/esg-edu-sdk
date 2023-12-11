@@ -1,0 +1,43 @@
+{
+  "name": "esg-sdk",
+  "version": "0.0.6",
+  "description": "A full fledged module for esg management",
+  "main": "dist/index.js",
+  "repository": {
+    "url": "git+https://github.com/Yogesh-Dubey-Ayesavi/lakshya-sdk.git"
+  },
+  "maintainers": [
+    "https://github.com/Yogesh-Dubey-Ayesavi"
+  ],
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "format": "npx prettier --write \"{src,test}/**/*.ts\"",
+    "build:docs": " npx typedoc --plugin typedoc-plugin-missing-exports  ./index.ts --exclude ./node_modules/**"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.4",
+    "axios": "^1.6.2",
+    "blob-util": "^2.0.2",
+    "form-data": "^4.0.0",
+    "supabase": "^1.110.1",
+    "ts-node": "^10.9.2",
+    "typedoc-plugin-missing-exports": "^2.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/Yogesh-Dubey-Ayesavi/lakshya-sdk/issues"
+  },
+  "homepage": "https://github.com/Yogesh-Dubey-Ayesavi/lakshya-sdk#readme",
+  "directories": {
+    "doc": "docs"
+  }
+}
