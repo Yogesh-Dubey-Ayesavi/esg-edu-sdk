@@ -1,13 +1,14 @@
 {
   "name": "esg-sdk",
-  "version": "0.0.6",
+  "version": "1.0.7",
   "description": "A full fledged module for esg management",
   "main": "dist/index.js",
   "repository": {
-    "url": "git+https://github.com/Yogesh-Dubey-Ayesavi/lakshya-sdk.git"
+    "url": "git+https://github.com/Yogesh-Dubey-Ayesavi/esg-edu-sdk"
   },
   "maintainers": [
-    "https://github.com/Yogesh-Dubey-Ayesavi"
+    "https://github.com/Yogesh-Dubey-Ayesavi",
+    "https://github.com/pri-13"
   ],
   "types": "dist/index.d.ts",
   "files": [

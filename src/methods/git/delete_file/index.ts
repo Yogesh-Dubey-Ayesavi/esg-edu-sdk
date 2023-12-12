@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { FileContent } from "../../models/file_content";
+import { FileContent } from "../../../models/file_content";
 /**
  * Deletes a file at the specified path.
  * @param {FileContent} fileContent - The file content model representing the file to be deleted.

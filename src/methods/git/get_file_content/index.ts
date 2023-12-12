@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { FileContent } from "../../models/file_content";
+import { FileContent } from "../../../models/file_content";
 /**
  * Fetches a list of FileContent instances from the specified API endpoint.
  * @param {string} dir - The directory parameter, Must be one of environment, social, governance.

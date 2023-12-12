@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { FileContent } from "../../models/file_content";
+import { FileContent } from "../../../models/file_content";
 
 const BASE_URL = 'https://asia-south1-esgedu-740d2.cloudfunctions.net/git-api';
 

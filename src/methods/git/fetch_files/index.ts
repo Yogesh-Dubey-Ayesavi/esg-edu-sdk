@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { FileModel } from '../../models/file_model';
+import { FileModel } from '../../../models/file_model';
 /**
  * Fetches a list of FileModel instances from the specified API endpoint.
  * @param {string} dir - The directory parameter for the API endpoint, Must be one of **environment**, **social**, **governance**.
