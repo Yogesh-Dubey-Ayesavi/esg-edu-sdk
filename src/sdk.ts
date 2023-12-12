@@ -11,6 +11,7 @@ import { FileModel } from "./models/file_model";
 import { ViewsByCityAndPageResponse } from "./models/views_by_city_and_page_response";
 import { ViewsByDateResponse } from "./models/views_by_date_response";
 import { ViewsByPageResponse } from "./models/views_by_page_response";
+import { SupabaseClient, createClient } from '@supabase/supabase-js'
 
 /**
  * The EsgSDK class provides methods for file management and analytics using the ESG API.
@@ -21,6 +22,7 @@ export default class EsgSDK {
   private static instance: EsgSDK;
   private static analytics_api_key: string;
 
+  static supabase: SupabaseClient;
   /**
    * Private constructor to prevent direct instantiation. Use the `initialize` method instead.
    */
@@ -31,10 +33,11 @@ export default class EsgSDK {
    * @param {string} analyticsApiKey - The API key for analytics authentication.
    * @returns {EsgSDK} - The singleton instance of the EsgSDK class.
    */
-  public static initialize(analyticsApiKey: string): EsgSDK {
+  public static initialize(analyticsApiKey: string, supabaseApiKey: string, supabaseApiUrl: string): EsgSDK {
     if (!EsgSDK.instance) {
       EsgSDK.instance = new EsgSDK();
       EsgSDK.analytics_api_key = analyticsApiKey;
+      EsgSDK.supabase = createClient(supabaseApiUrl, supabaseApiKey);
     }
     return EsgSDK.instance;
   }
