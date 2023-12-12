@@ -1,6 +1,6 @@
 {
   "name": "esg-sdk",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A full fledged module for esg management",
   "main": "dist/index.js",
   "repository": {
