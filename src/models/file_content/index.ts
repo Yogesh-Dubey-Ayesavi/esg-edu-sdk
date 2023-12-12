@@ -95,6 +95,9 @@ export interface IFileContent {
       * 
       *   * Creates an instance of FileContent.
      * @param {IFileContent} data - The data to initialize the file content model.
+     * 
+     * #### Note : While creating a new file provide `SHA` as `""`. 
+     * #### `SHA` hash is mandatory when updating or deleting a file
     
     Example usage:
     ```javascript
