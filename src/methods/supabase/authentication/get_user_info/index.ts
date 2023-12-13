@@ -1,7 +1,7 @@
 import { SupabaseClient, AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 
 /**
- * Sign in with Google using Supabase authentication.
+ * Get the current authenticated user info.
  * @param {SupabaseClient} supabaseInstance - The Supabase client instance.
  * @returns {Promise<User>} - The signed-in user information or null if there was an error.
  */

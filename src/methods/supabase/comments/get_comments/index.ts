@@ -7,17 +7,26 @@ import { FileComment } from '../../../../models/file_comment';
  * @param {string} pageId - The ID of the comment to retrieve.
  * @returns {Promise<FileComment | null>} - The retrieved comment or null if not found.
  */
-async function getComments(supabaseInstance: SupabaseClient, pageId: string): Promise<FileComment | null> {
+export default async function getComments(supabaseInstance: SupabaseClient, pageId: string): Promise<FileComment[] | []> {
   try {
     // Use the 'get' method to retrieve a specific row from the 'comments' table based on the comment ID
     const { data, error } = await supabaseInstance.from('comments').select().eq('page_id', pageId);
 
     if (error) {
       throw error;
-    }
+    } 
+
+
 
     // Return the retrieved comment or null if not found
-    return data?.[0] || null;
+    return data?.map((e)=>{
+      return new FileComment({
+        page_id :e?.page_id,
+        text : e?.text,
+        time : e?.time,
+        id : e?.id
+      });
+    });
   } catch (error) {
     console.error('Error getting comment:', error);
     throw error;

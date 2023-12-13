@@ -1,8 +1,8 @@
-import { SupabaseClient, AuthChangeEvent, Session, User } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { Administrator } from 'src/models/administrator';
 
 /**
- * Sign in with Google using Supabase authentication.
+ * Update Authenticated User info.
  * @param {SupabaseClient} supabaseInstance - The Supabase client instance.
  * @returns {Promise<Boolean>} - The signed-in user information or null if there was an error.
  */

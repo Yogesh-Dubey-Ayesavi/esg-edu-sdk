@@ -1,3 +1,4 @@
+import { Session, SupabaseClient, User, createClient } from '@supabase/supabase-js';
 import getViewsByCityAndPage from "./methods/analytics/get_views_by_city_and_page";
 import getViewsByDate from "./methods/analytics/get_views_by_date";
 import getViewsByPage from "./methods/analytics/get_views_by_page";
@@ -6,12 +7,24 @@ import deleteFile from "./methods/git/delete_file";
 import fetchFiles from "./methods/git/fetch_files";
 import getFileContent from "./methods/git/get_file_content";
 import updateFile from "./methods/git/update_file";
+import getUserInfo from './methods/supabase/authentication/get_user_info';
+import signIn from "./methods/supabase/authentication/sign_in";
+import signOut from './methods/supabase/authentication/sign_out';
+import updateUserInfo from './methods/supabase/authentication/update_user_info';
+import getComments from './methods/supabase/comments/get_comments';
+import { Administrator } from './models/administrator';
+import { FileComment } from './models/file_comment';
 import { FileContent } from "./models/file_content";
 import { FileModel } from "./models/file_model";
 import { ViewsByCityAndPageResponse } from "./models/views_by_city_and_page_response";
 import { ViewsByDateResponse } from "./models/views_by_date_response";
 import { ViewsByPageResponse } from "./models/views_by_page_response";
-import { SupabaseClient, createClient } from '@supabase/supabase-js'
+
+/**
+ * Function type for a void callback.
+ */
+type VoidCallback = (user : User | undefined, session : Session | null) => void;
+
 
 /**
  * The EsgSDK class provides methods for file management and analytics using the ESG API.
@@ -22,7 +35,12 @@ export default class EsgSDK {
   private static instance: EsgSDK;
   private static analytics_api_key: string;
 
-  static supabase: SupabaseClient;
+  static _supabase: SupabaseClient;
+
+  get supabase() : SupabaseClient {
+      return EsgSDK._supabase;
+  } 
+
   /**
    * Private constructor to prevent direct instantiation. Use the `initialize` method instead.
    */
@@ -31,13 +49,15 @@ export default class EsgSDK {
   /**
    * Initializes and returns the singleton instance of the EsgSDK class.
    * @param {string} analyticsApiKey - The API key for analytics authentication.
+   * @param {string} supabaseApiKey - The API key for supabase authentication.
+   * @param {string} supabaseApiUrl - The Supabase EndPoint url for supabase authentication.
    * @returns {EsgSDK} - The singleton instance of the EsgSDK class.
    */
   public static initialize(analyticsApiKey: string, supabaseApiKey: string, supabaseApiUrl: string): EsgSDK {
     if (!EsgSDK.instance) {
       EsgSDK.instance = new EsgSDK();
       EsgSDK.analytics_api_key = analyticsApiKey;
-      EsgSDK.supabase = createClient(supabaseApiUrl, supabaseApiKey);
+      EsgSDK._supabase = createClient(supabaseApiUrl, supabaseApiKey);
     }
     return EsgSDK.instance;
   }
@@ -185,4 +205,49 @@ export default class EsgSDK {
   async getViewsByCityAndPage(): Promise<ViewsByCityAndPageResponse[]> {
     return await getViewsByCityAndPage(EsgSDK.analytics_api_key);
   }
+
+ 
+/**
+ * Updates User's info Supabase authentication.
+ * @returns {Promise<Boolean>} - The signed-in user information or null if there was an error.
+ */
+ async  updateUserInfo(administrator : Administrator): Promise<Boolean> {
+    return await updateUserInfo(this.supabase,administrator);
+ }
+
+ 
+/**
+ * Sign in with Google using Supabase authentication.
+ * @returns {Promise<Boolean>} - The signed-in user information or null if there was an error.
+ */
+async signIn(authListen : VoidCallback): Promise<Boolean> {
+  return  await signIn(this.supabase,authListen);
+}
+
+/**
+ * Get the current authenticated user info.
+ * @returns {Promise<User>} - The signed-in user information or null if there was an error.
+ */
+ async  getUserInfo(): Promise<User> {
+    return await getUserInfo(this.supabase);
+}
+
+
+/**
+ *  Signs user out of the context
+ */
+
+ async  signOut() : Promise<void> {
+ return  await  signOut(this.supabase);
+  }
+
+  /**
+ * Retrieves a comment from the 'comments' table based on the comment ID.
+ * @param {string} pageId - The ID of the comment to retrieve.
+ * @returns {Promise<FileComment[] | []>} - The retrieved comment or [] if not found.
+ */
+  async getComments(pageId: string): Promise<FileComment[] | []> {
+    return await getComments(this.supabase,pageId);
+  }
+
 }
