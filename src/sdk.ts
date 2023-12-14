@@ -7,6 +7,12 @@ import deleteFile from "./methods/git/delete_file";
 import fetchFiles from "./methods/git/fetch_files";
 import getFileContent from "./methods/git/get_file_content";
 import updateFile from "./methods/git/update_file";
+import acceptInvitation from './methods/supabase/administrator/accept_invitation';
+import checkAuthorization from './methods/supabase/administrator/check_authorization';
+import createDiscardAdminRole from './methods/supabase/administrator/create_admin';
+import deleteAdmin from './methods/supabase/administrator/delete_admin';
+import getAdmins from './methods/supabase/administrator/get_admins';
+import inviteAdmin from './methods/supabase/administrator/invite_admin';
 import getUserInfo from './methods/supabase/authentication/get_user_info';
 import signIn from "./methods/supabase/authentication/sign_in";
 import signOut from './methods/supabase/authentication/sign_out';
@@ -16,6 +22,7 @@ import { Administrator } from './models/administrator';
 import { FileComment } from './models/file_comment';
 import { FileContent } from "./models/file_content";
 import { FileModel } from "./models/file_model";
+import { SDKInitializerConfig } from './models/sdk_initializer_config';
 import { ViewsByCityAndPageResponse } from "./models/views_by_city_and_page_response";
 import { ViewsByDateResponse } from "./models/views_by_date_response";
 import { ViewsByPageResponse } from "./models/views_by_page_response";
@@ -41,6 +48,14 @@ export default class EsgSDK {
       return EsgSDK._supabase;
   } 
 
+   /**
+   * Getter for obtaining the initialized instance of EsgSDK
+   * #### NOTE : Must call this method only after initilizing `EsgSDK` else will throw error;
+   */
+  static get getter():EsgSDK{
+    return this.instance;
+  }
+
   /**
    * Private constructor to prevent direct instantiation. Use the `initialize` method instead.
    */
@@ -48,16 +63,14 @@ export default class EsgSDK {
 
   /**
    * Initializes and returns the singleton instance of the EsgSDK class.
-   * @param {string} analyticsApiKey - The API key for analytics authentication.
-   * @param {string} supabaseApiKey - The API key for supabase authentication.
-   * @param {string} supabaseApiUrl - The Supabase EndPoint url for supabase authentication.
+   * @param {SDKInitializerConfig} - For initilizing the SDK with required resources check out at [SDKInitializerConfig] 
    * @returns {EsgSDK} - The singleton instance of the EsgSDK class.
    */
-  public static initialize(analyticsApiKey: string, supabaseApiKey: string, supabaseApiUrl: string): EsgSDK {
+  public static initialize(config:SDKInitializerConfig): EsgSDK {
     if (!EsgSDK.instance) {
       EsgSDK.instance = new EsgSDK();
-      EsgSDK.analytics_api_key = analyticsApiKey;
-      EsgSDK._supabase = createClient(supabaseApiUrl, supabaseApiKey);
+      EsgSDK.analytics_api_key = config.analyticsApiKey;
+      EsgSDK._supabase = createClient(config.supabaseApiUrl, config.supabaseApiKey);
     }
     return EsgSDK.instance;
   }
@@ -249,5 +262,79 @@ async signIn(authListen : VoidCallback): Promise<Boolean> {
   async getComments(pageId: string): Promise<FileComment[] | []> {
     return await getComments(this.supabase,pageId);
   }
+  /**
+ * Invites a user to become an administrator by calling a Supabase stored procedure.
+ *
+ * @param {string} email - The email address of the user to be invited as an administrator.
+ * @returns {Promise<void>} A promise that resolves if the invitation is sent successfully.
+ * @throws {Error} Throws an error if there is an issue with the invitation process.
+ */
+  async inviteAdmin(email:string):Promise<void>{
+      return await inviteAdmin(this.supabase,email);
+  }
+  /**
+ * Accepts an invitation for a user, validates the access token, signs in the user,
+ * and assigns the "administrator" role by inserting a record into the "administrators" table.
+ *
+ * @param {string} access_token - The access token associated with the user's invitation.
+ * @returns {Promise<boolean>} A promise that resolves to `true` if the invitation is successfully accepted and the role is assigned.
+ * @throws {string | Error} Throws an error if validation fails or role assignment is unsuccessful.
+ */
+  async acceptInvitation(access_token:string):Promise<Boolean>{
+      return acceptInvitation(this.supabase,access_token);
+  }
+
+  
+/**
+ * Checks the authorization status of the current user for Esg-Edu Dashboard access.
+ *
+ * @returns {Promise<boolean>} A promise that resolves to `true` if the user is authorized, and `false` otherwise.
+ * @throws {Error} Throws an error if there is an issue with checking the authorization status.
+ */
+ async checkAuthorization():Promise<Boolean> {
+   return await  checkAuthorization(this.supabase);
+ }
+
+ 
+/**
+ * Creates or discards the "admin" role for a user.
+ * Note: Admin and administrator are different, admin role is superior than administrator roles.
+ * administrators roles can not delete files, and update site settings, publish pages.
+ *
+ * @param {string} userId - The user ID for which the "admin" role is to be created or discarded.
+ * @param {boolean} is_admin_role - A boolean indicating whether to create (`true`) or discard (`false`) the "admin" role.
+ * @returns {Promise<void>} A promise that resolves when the operation is successful.
+ * @throws {Error} Throws an error if there is an issue with the role creation or discard process.
+ */
+ async createDiscardAdminRole(userId:string,is_admin_role:Boolean):Promise<void>{
+   return await createDiscardAdminRole(this.supabase,userId,is_admin_role);
+ }
+
+
+ /**
+ * Deletes the "admin" role for a user using a Supabase stored procedure.
+ *
+ * @param {string} userId - The user ID for which the "admin" role is to be deleted.
+ * @returns {Promise<void>} A promise that resolves when the role deletion is successful.
+ * @throws {Error} Throws an error if there is an issue with the role deletion process.
+ */
+ async deleteAdmin(userId:string):Promise<void>{
+    return await deleteAdmin(this.supabase,userId);
+ }
+
+/**
+ * Retrieves a list of administrators from the Supabase "administrators" table.
+ *
+ * @returns {Promise<Administrator[] | []>} A promise that resolves to an array of Administrator objects if successful, or an empty array if there are no administrators.
+ * @throws {Error} Throws an error if there is an issue with retrieving the administrators.
+ */
+ async getAdmins():Promise<Administrator[]| []>{
+    return await getAdmins(this.supabase);
+ }
+
+  
+
+  
+  
 
 }

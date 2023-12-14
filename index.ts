@@ -14,3 +14,4 @@ export {ViewsByCityAndPageResponse,IViewsByCityAndPageResponse} from './src/mode
 export {default as getViewsByDate} from "./src/methods/analytics/get_views_by_date";
 export {default as getViewsByPage} from "./src/methods/analytics/get_views_by_page";
 export {default as getViewsByCityAndPage} from "./src/methods/analytics/get_views_by_city_and_page";
+export {SDKInitializerConfig} from './src/models/sdk_initializer_config';
