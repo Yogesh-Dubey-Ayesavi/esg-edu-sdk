@@ -52,7 +52,7 @@ export default class EsgSDK {
    * Getter for obtaining the initialized instance of EsgSDK
    * #### NOTE : Must call this method only after initilizing `EsgSDK` else will throw error;
    */
-  static get getter():EsgSDK{
+  static get getInstance():EsgSDK{
     return this.instance;
   }
 
@@ -73,6 +73,7 @@ export default class EsgSDK {
       EsgSDK._supabase = createClient(config.supabaseApiUrl, config.supabaseApiKey);
     }
     return EsgSDK.instance;
+  
   }
 
   /**
@@ -107,6 +108,7 @@ export default class EsgSDK {
    */
   async fetchFiles(dir: string): Promise<FileModel[]> {
     return await fetchFiles(dir);
+    
   }
 
   /**

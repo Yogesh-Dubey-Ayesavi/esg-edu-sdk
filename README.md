@@ -21,6 +21,13 @@ const esgSDK = EsgSDK.initialize({
      supabaseApiUrl :"SUPBASE_API_URL"
 });
 
+
+### Using EsgSDK instance
+EsgSDK instance once initilized can be obtained anywhere just by calling static method `getInstance`;
+
+
+const sdk = EsgSDK.getInstance;
+
 // Example file content data
 const fileContentData = new FileContent({
   sha: "abc123",
