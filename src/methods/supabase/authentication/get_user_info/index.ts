@@ -6,7 +6,7 @@ import { SupabaseClient, AuthChangeEvent, Session, User } from '@supabase/supaba
  * @returns {Promise<User>} - The signed-in user information or null if there was an error.
  */
 export default async function getUserInfo(supabaseInstance: SupabaseClient): Promise<User> {
-  try {
+  try { 
     const { data, error } = await supabaseInstance.auth.getUser();
 
     if (error) {

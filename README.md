@@ -15,7 +15,18 @@ npm install esg-sdk
 import { EsgSDK, FileContent, FileModel } from "esg-sdk";
 
 // Initialize the EsgSDK singleton instance
-const esgSDK = EsgSDK.initialize("your-analytics-api-key");
+const esgSDK = EsgSDK.initialize({
+     analyticsApiKey :"YOUR_API_KEY",
+     supabaseApiKey:"YOUR_API_KEY",
+     supabaseApiUrl :"SUPBASE_API_URL"
+});
+
+
+### Using EsgSDK instance
+EsgSDK instance once initilized can be obtained anywhere just by calling static method `getInstance`;
+
+
+const sdk = EsgSDK.getInstance;
 
 // Example file content data
 const fileContentData = new FileContent({
@@ -87,9 +98,93 @@ async function getViewsByCityAndPageExample() {
   const viewsByCityAndPageData = await esgSDK.getViewsByCityAndPage();
   console.log("Views by City and Page:", viewsByCityAndPageData);
 }
-```
 
-**Note**: Replace `"your-analytics-api-key"` with your actual analytics API key when using these methods.
+// Sign In Usage
+try {
+  const authSuccess = await esgSDK.signIn(() => {
+    // Auth event listener
+    console.log('User authenticated!');
+  });
+  console.log('Authentication success:', authSuccess);
+} catch (error) {
+  console.error('Error during sign-in:', error);
+}
+
+// getUserInfo Usage
+try {
+  const userInfo = await esgSDK.getUserInfo();
+  console.log('User information:', userInfo);
+} catch (error) {
+  console.error('Error getting user information:', error);
+}
+
+// signOut Usage
+try {
+  await signOut();
+  console.log('User signed out successfully.');
+} catch (error) {
+  console.error('Error during sign-out:', error);
+}
+
+
+// getComments Usage
+try {
+  const pageId = "examplePageId";
+  const comments = await esgSDK.getComments(pageId);
+  console.log('Comments:', comments);
+} catch (error) {
+  console.error('Error fetching comments:', error);
+}
+
+// inviteAdmin Usage
+try {
+  const email = "admin@example.com";
+  await esgSDK.inviteAdmin(email);
+  console.log('Admin invitation sent successfully.');
+} catch (error) {
+  console.error('Error sending admin invitation:', error);
+}
+
+
+
+// acceptInvitation Usage
+try {
+  const access_token = "exampleAccessToken";
+  const success = await esgSDK.acceptInvitation(access_token);
+  console.log('Invitation acceptance success:', success);
+} catch (error) {
+  console.error('Error accepting invitation:', error);
+}
+
+// checkAuthorization Usage
+try {
+  const isAuthorized = await esgSDK.checkAuthorization();
+  console.log('User authorization status:', isAuthorized);
+} catch (error) {
+  console.error('Error checking authorization:', error);
+}
+
+
+// createDiscardAdminRole Usage
+try {
+  const userId = "exampleUserId";
+  const is_admin_role = true;
+  await esgSDK.createDiscardAdminRole(userId, is_admin_role);
+  console.log('Admin role created successfully.');
+} catch (error) {
+  console.error('Error creating/discarding admin role:', error);
+}
+
+
+// deleteAdmin Usage
+try {
+  const userId = "exampleUserId";
+  await esgSDK.deleteAdmin(userId);
+  console.log('Admin role deleted successfully.');
+} catch (error) {
+  console.error('Error deleting admin role:', error);
+}
+```
 
 ## Methods
 
