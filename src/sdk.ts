@@ -1,10 +1,11 @@
 import { Session, SupabaseClient, User, createClient } from '@supabase/supabase-js';
+import { getCountTotalIntiatives } from './methods/analytics/get_count_by_year_by_status';
 import getViewsByCityAndPage from "./methods/analytics/get_views_by_city_and_page";
 import getViewsByDate from "./methods/analytics/get_views_by_date";
 import getViewsByPage from "./methods/analytics/get_views_by_page";
-import createFile from "./methods/git/create_file";
+import createFile, { CreateFileParams } from "./methods/git/create_file";
 import deleteFile from "./methods/git/delete_file";
-import fetchFiles from "./methods/git/fetch_files";
+import fetchFiles, { searchFiles } from "./methods/git/fetch_files";
 import getFileContent from "./methods/git/get_file_content";
 import updateFile from "./methods/git/update_file";
 import acceptInvitation from './methods/supabase/administrator/accept_invitation';
@@ -19,6 +20,7 @@ import signOut from './methods/supabase/authentication/sign_out';
 import updateUserInfo from './methods/supabase/authentication/update_user_info';
 import getComments from './methods/supabase/comments/get_comments';
 import { Administrator } from './models/administrator';
+import { CompositeFilter } from './models/composite_filter';
 import { FileComment } from './models/file_comment';
 import { FileContent } from "./models/file_content";
 import { FileModel } from "./models/file_model";
@@ -75,28 +77,30 @@ export default class EsgSDK {
     return EsgSDK.instance;
   
   }
-
   /**
-   * Creates a file with the specified content at the given path.
-   * @param {FileContent} file - The file content parameters.
-   * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file creation was successful.
-   * @example
-   * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
-   * const fileContentInstance = new FileContent({
-   *   sha: "abc123",
-   *   path: "environment/file1 ",
-   *   name: "file1 ",
-   *   type: "file",
-   *   content: "content string"
-   * });
-   * const success = await esgSDK.createFile(fileContentInstance);
-   * console.log("File creation success:", success);
-   */
-  async createFile(file: FileContent): Promise<boolean> {
-    return await createFile(file);
-  }
+ * Creates a file with the specified parameters using the Supabase stored procedure.
+ *
+ * @param {CreateFileParams} params - The parameters for creating a new file.
+ * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file creation was successful.
+ * @throws {Error} Throws an error if there is an issue with the Supabase query.
+ * @example
+ 
+ * const createParams = {
+ *   dir: "environment",
+ *   dateOfCompletion: new Date(),
+ *   location: "India",
+ *   file_desc: "File description",
+ *   content: "content string",
+ *   initiative_name: "Initiative Name"
+ * };
+ * const success = await esgSDK.createFile(createParams);
+ * console.log("File creation success:", success);
+ */
+async createFile(params: CreateFileParams): Promise<boolean> {
+  return await createFile(this.supabase, params);
+}
 
-  /**
+    /**
    * Fetches a list of FileModel instances from the specified API endpoint.
    * @param {string} dir - The directory parameter for the API endpoint. Must be one of "environment", "social", "governance".
    * @returns {Promise<FileModel[]>} - A Promise that resolves to an array of FileModel instances.
@@ -107,49 +111,64 @@ export default class EsgSDK {
    * console.log("Fetched Files:", files.map((file) => new FileModel(file)));
    */
   async fetchFiles(dir: string): Promise<FileModel[]> {
-    return await fetchFiles(dir);
-    
+    return await fetchFiles(this.supabase, dir);
   }
+
+  /**
+   * Searches for files based on the provided filter in the specified API endpoint.
+   * @param {string} dir - The directory parameter for the API endpoint. Must be one of "environment", "social", "governance".
+   * @param {CompositeFilter} filter - The composite filter to apply to the search.
+   * @returns {Promise<FileModel[]>} - A Promise that resolves to an array of FileModel instances matching the search criteria.
+   * @example
+   * const directory = "environment";
+   * const filter = { field_name: "name", key: "energy" };
+   * const searchResult = await esgSDK.searchFiles(directory, filter);
+   * console.log("Search Result:", searchResult.map((file) => new FileModel(file)));
+   */
+  async searchFiles(dir: string, filter: CompositeFilter): Promise<FileModel[]> {
+    return await searchFiles(this.supabase, dir, filter);
+  }
+  
 
   /**
    * Updates a file with the specified content at the given path.
    * @param {FileContent} file - The file content parameters.
    * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file update was successful.
    * @example
-   * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
    * const fileContentInstance = new FileContent({
    *   sha: "abc123",
-   *   path: " environment/file1 ",
-   *   name: "file1 ",
-   *   type: "file",
+   *   path: " environment ",
+   *   name: "initiative name",
    *   content: "updated content string"
    * });
-   * const success = await esgSDK.updateFile(fileContentInstance);
+   * const success = await esgSDK.updateFile(fileContentInstance,fileModelInstance);
    * console.log("File update success:", success);
    */
-  async updateFile(file: FileContent): Promise<boolean> {
+  async updateFile(fileModel : FileModel,file: FileContent): Promise<boolean> {
+    await this.supabase.from("pages").update(fileModel.toSupaJson()).eq('id',fileModel.id);
     return await updateFile(file);
   }
 
   /**
    * Fetches the content of a file from the specified API endpoint.
    * @param {string} dir - The directory parameter. Must be one of "environment", "social", "governance".
-   * @param {string} fileName - The name of the file without extension.
+   * @param {FileModel} fileModel - The name of the file without extension.
    * @returns {Promise<FileContent>} - A Promise that resolves to the content of the specified file.
    * @example
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
    * const dir = "environment";
-   * const fileName = "file1";
-   * const fileContentInstance = await esgSDK.getFileContent(dir, fileName);
+   * const fileName = "sflsj-fsdafjlj-jfas"; // Mostly a uuid 
+   * const fileContentInstance = await esgSDK.getFileContent(dir, fileModelInstance); // File Model instance fetched from listing files [fetchFiles]
    * console.log("File Content:", new FileContent(fileContentInstance));
    */
-  async getFileContent(dir: string, fileName: string): Promise<FileContent> {
-    return await getFileContent(dir, fileName);
+  async getFileContent(dir: string, fileModel:FileModel): Promise<FileContent> {
+    return await getFileContent(dir, fileModel);
   }
 
   /**
    * Deletes a file at the specified path.
-   * @param {FileContent} fileContent - The file content model representing the file to be deleted.
+   * @param {FileContent} fileContent - The file  model representing the file to be deleted.
+   * @param {FileModel} fileModel - The file content model representing the file to be deleted.
    * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file deletion was successful.
    * @example
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
@@ -163,8 +182,9 @@ export default class EsgSDK {
    * const success = await esgSDK.deleteFile(fileContentInstance);
    * console.log("File deletion success:", success);
    */
-  async deleteFile(fileContent: FileContent): Promise<boolean> {
-    return await deleteFile(fileContent);
+  async deleteFile(fileModel:FileModel,fileContent:FileContent): Promise<boolean> {
+   
+    return await deleteFile(this.supabase,fileModel.copyWith({sha:fileContent.sha}));
   }
 
   /**
@@ -332,11 +352,65 @@ async signIn(authListen : VoidCallback): Promise<Boolean> {
  */
  async getAdmins():Promise<Administrator[]| []>{
     return await getAdmins(this.supabase);
- }
+  }/**
+ * Gets the total number of initiatives created until now.
+ * @returns {Promise<number>} The total number of initiatives in the current year.
+ * @throws {Error} Throws an error if there is an issue with the Supabase query.
+ */
+async getCurrentYearTotalInitiatives(): Promise<number> {
+  const { count, error } = await this.supabase.from("pages").select('*', { count: 'exact', head: true });
 
-  
+  if (error) {
+    throw error;
+  }
 
-  
-  
+  return count ?? 0;
+}
 
+/**
+ * Gets the total number of initiatives in the previous year.
+ * @returns {Promise<number>} The total number of initiatives in the previous year.
+ */
+async getPrevYearTotalInitiatives(): Promise<number> {
+  const currentYear = new Date(new Date().getFullYear(), 0, 1);
+  const startFrom = new Date(1980, 0, 1);
+  return await getCountTotalIntiatives(this.supabase, startFrom, currentYear, "created_at");
+}
+
+/**
+ * Gets the total number of initiatives in the current month with the 'undergoing' status.
+ * @returns {Promise<number>} The total number of 'undergoing' initiatives in the current month.
+ * @throws {Error} Throws an error if there is an issue with the Supabase query.
+ */
+async getCurrentMonthUndergoingInitiativeCounts(): Promise<number> {
+  const { count, error } = await this.supabase.from("pages").select('*', { count: 'exact', head: true }).eq("status", "undergoing");
+
+  if (error) {
+    throw error;
+  }
+
+  return count ?? 0;
+}
+/**
+ * Gets the total number of initiatives in the previous month with the 'undergoing' status.
+ * @returns {Promise<number>} The total number of 'undergoing' initiatives in the previous month.
+ * @throws {Error} Throws an error if there is an issue with the Supabase query.
+ */
+async getPrevMonthUndergoingInitiativeCounts(): Promise<number> {
+  try {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    const { count, error ,data} = await this.supabase.from("pages").select('*', { count: 'exact', head: false }).gt("closed_at", new Date(year, month, 0).toISOString());
+    if (error) {
+     throw error;
+    }
+
+    return count ?? 0;
+  } catch (error) {
+    // Handle the error, log it, or rethrow if necessary
+    console.error(error);
+    throw new Error('An error occurred while fetching initiative counts.');
+  }
+}
 }

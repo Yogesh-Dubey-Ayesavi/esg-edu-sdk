@@ -1,4 +1,4 @@
-export { default as createFile } from "./src/methods/git/create_file";
+export { default as createFile ,CreateFileParams} from "./src/methods/git/create_file";
 export { default as deleteFile } from "./src/methods/git/delete_file";
 export { default as fetchFiles } from "./src/methods/git/fetch_files";
 export { default as getFileContent } from "./src/methods/git/get_file_content";
@@ -15,3 +15,5 @@ export {default as getViewsByDate} from "./src/methods/analytics/get_views_by_da
 export {default as getViewsByPage} from "./src/methods/analytics/get_views_by_page";
 export {default as getViewsByCityAndPage} from "./src/methods/analytics/get_views_by_city_and_page";
 export {SDKInitializerConfig} from './src/models/sdk_initializer_config';
+export {default as getCountByYearByStatus,getCountTotalIntiatives} from './src/methods/analytics/get_count_by_year_by_status'
+export {CompositeFilter} from './src/models/composite_filter'
