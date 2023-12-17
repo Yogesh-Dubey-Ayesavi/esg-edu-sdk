@@ -68,7 +68,7 @@ export interface IFileContent {
     sha: string;
   
     /**
-     * The path of the file, including the file name.
+     * The path of the file, including the file name without extension.
      * @type {string}
      */
     path: string;

@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { FileContent } from "../../../models/file_content";
+import { FileModel } from '../../../models/file_model';
 
 const BASE_URL = 'https://asia-south1-esgedu-740d2.cloudfunctions.net/git-api';
 
@@ -9,7 +10,7 @@ const BASE_URL = 'https://asia-south1-esgedu-740d2.cloudfunctions.net/git-api';
  * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file update was successful.
  */
 export default async function updateFile(file: FileContent): Promise<boolean> {
-  try {
+  try { 
     const url = `${BASE_URL}/update?type=update&path=${file.path}.mdx&sha=${file.sha}`;
     const requestBody = {
       content: file.content
