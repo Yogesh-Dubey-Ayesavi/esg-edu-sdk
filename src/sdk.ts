@@ -629,5 +629,32 @@ async getInitiativeCountByLocation():Promise<InitiativeCountByLocation[]> {
   }));
 }
 
+/**
+ * Asynchronously fetches the user role using the "get_role" RPC function.
+ * @returns A Promise that resolves to the user role.
+ * @throws An error if there's an issue with the RPC call.
+ */
+async  getRole(): Promise<UserRole> {
+  try {
+    // Make an RPC call to execute the "get_role" function
+    const { data, error } = await this.supabase.rpc('get_role');
+
+    if (error) {
+      // Throw an error if there's an issue with the RPC call
+      throw error;
+    } else {
+      // Assuming your RPC function returns a single value directly
+      // If it returns an object or array, adjust this part accordingly
+      const role: UserRole = data;
+
+      // Return the user role
+      return role;
+    }
+  } catch (error) {
+    // Log and rethrow the error for better debugging
+    console.error('Error in getRole:', error);
+    throw error;
+  }
+}
 
 }
