@@ -17,4 +17,5 @@ export { IViewsByCityAndPageResponse, ViewsByCityAndPageResponse } from './src/m
 export { IViewsByDateResponse, ViewsByDateResponse } from './src/models/views_by_date_response';
 export { IViewsByPageResponse, ViewsByPageResponse } from './src/models/views_by_page_response';
 export { default as EsgSDK } from "./src/sdk";
+export {UserRole} from './src/models/enumerations';
 
