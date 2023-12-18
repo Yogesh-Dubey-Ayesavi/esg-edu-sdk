@@ -152,7 +152,7 @@ async createFile(params: CreateFileParams): Promise<boolean> {
   /**
    * Fetches the content of a file from the specified API endpoint.
    * @param {string} dir - The directory parameter. Must be one of "environment", "social", "governance".
-   * @param {FileModel} fileModel - The name of the file without extension.
+   * @param {fileId} fileId - The id of the file from [FileModel].
    * @returns {Promise<FileContent>} - A Promise that resolves to the content of the specified file.
    * @example
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
@@ -161,8 +161,8 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * const fileContentInstance = await esgSDK.getFileContent(dir, fileModelInstance); // File Model instance fetched from listing files [fetchFiles]
    * console.log("File Content:", new FileContent(fileContentInstance));
    */
-  async getFileContent(dir: string, fileModel:FileModel): Promise<FileContent> {
-    return await getFileContent(dir, fileModel);
+  async getFileContent(dir: string, fileId:string): Promise<FileContent> {
+    return await getFileContent(dir, fileId);
   }
 
   /**
