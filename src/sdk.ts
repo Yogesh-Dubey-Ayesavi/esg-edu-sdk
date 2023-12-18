@@ -1,4 +1,4 @@
-import { Session, SupabaseClient, User, createClient } from '@supabase/supabase-js';
+import { Session, SupabaseClient, User, UserResponse, createClient } from '@supabase/supabase-js';
 import { getCountTotalIntiatives } from './methods/analytics/get_count_by_year_by_status';
 import getViewsByCityAndPage from "./methods/analytics/get_views_by_city_and_page";
 import getViewsByDate from "./methods/analytics/get_views_by_date";
@@ -28,6 +28,7 @@ import { SDKInitializerConfig } from './models/sdk_initializer_config';
 import { ViewsByCityAndPageResponse } from "./models/views_by_city_and_page_response";
 import { ViewsByDateResponse } from "./models/views_by_date_response";
 import { ViewsByPageResponse } from "./models/views_by_page_response";
+import { UserRole } from './models/enumerations';
 
 /**
  * Function type for a void callback.
@@ -288,11 +289,12 @@ async signIn(authListen : VoidCallback): Promise<Boolean> {
  * Invites a user to become an administrator by calling a Supabase stored procedure.
  *
  * @param {string} email - The email address of the user to be invited as an administrator.
- * @returns {Promise<void>} A promise that resolves if the invitation is sent successfully.
+ * @param {UserRole} userRole - The role of the user to be invited as an.
+  * @returns {Promise<void>} A promise that resolves if the invitation is sent successfully.
  * @throws {Error} Throws an error if there is an issue with the invitation process.
  */
-  async inviteAdmin(email:string):Promise<void>{
-      return await inviteAdmin(this.supabase,email);
+  async inviteAdmin(email:string,userRole:UserRole):Promise<void>{
+      return await inviteAdmin(this.supabase,email,userRole);
   }
   /**
  * Accepts an invitation for a user, validates the access token, signs in the user,

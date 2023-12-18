@@ -16,7 +16,7 @@ export default async function getAdmins(supabase:SupabaseClient):Promise<Adminis
     throw error;
    }else{
        return data.map((e)=>new Administrator({
-            created_at :e.created_at,name:e.user.name,avatar_url:e.user.avatar_url,id:  e.id,is_admin:e.is_admin
+            created_at :e.created_at,name:e.user.name,avatar_url:e.user.avatar_url,id:  e.id,role:e.role
         }))
    }
 }
