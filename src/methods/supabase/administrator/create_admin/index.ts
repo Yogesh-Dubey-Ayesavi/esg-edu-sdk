@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
+import { UserRole } from "../../../../models/enumerations/user_role";
 
-export default async function createDiscardAdminRole(supabase:SupabaseClient, userId : string,is_admin:Boolean):Promise<void> {
-   await supabase.from("administrators").update({"is_admin":is_admin,
-"user_id":userId});
-}
+export default async function changeAdminRole(supabase:SupabaseClient, userId : string,role:UserRole):Promise<void> {
+   await supabase.from("users").update({"role":role}).eq('id',userId);
+} 

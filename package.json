@@ -1,6 +1,6 @@
 {
   "name": "esg-sdk",
-  "version": "4.0.3",
+  "version": "4.1.4",
   "description": "A full fledged module for esg management",
   "main": "dist/index.js",
   "repository": {
@@ -29,9 +29,11 @@
     "form-data": "^4.0.0",
     "supabase": "^1.110.1",
     "ts-node": "^10.9.2",
-    "typedoc-plugin-missing-exports": "^2.1.0"
+    "typedoc-plugin-missing-exports": "^2.1.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.7",
     "typescript": "^4.0.0"
   },
   "bugs": {

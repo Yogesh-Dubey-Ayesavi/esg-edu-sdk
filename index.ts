@@ -8,14 +8,16 @@ export { default as fetchFiles } from "./src/methods/git/fetch_files";
 export { default as getInitiativeContent } from "./src/methods/git/get_file_content";
 export { default as updateFile } from "./src/methods/git/update_file";
 export { Administrator, IAdministrator } from "./src/models/administrator";
+export { CertificateModel, ICertificationModel } from './src/models/certificate';
 export { CompositeFilter } from './src/models/composite_filter';
+export { UserRole } from './src/models/enumerations';
 export { FileComment, IFileComment } from "./src/models/file_comment";
 export { IInitiativeContent, InitiativeContent } from "./src/models/file_content";
 export { IInitiativeModel, InitiativeModel } from "./src/models/file_model";
+export { IInstitutionInitializer, InstitutionModel } from './src/models/institution';
 export { SDKInitializerConfig } from './src/models/sdk_initializer_config';
 export { IViewsByCityAndPageResponse, ViewsByCityAndPageResponse } from './src/models/views_by_city_and_page_response';
 export { IViewsByDateResponse, ViewsByDateResponse } from './src/models/views_by_date_response';
 export { IViewsByPageResponse, ViewsByPageResponse } from './src/models/views_by_page_response';
 export { default as EsgSDK } from "./src/sdk";
-export {UserRole} from './src/models/enumerations';
 

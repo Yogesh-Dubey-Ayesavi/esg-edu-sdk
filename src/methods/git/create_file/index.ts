@@ -10,7 +10,7 @@
           "body":params.content,
           "file_path":params.dir,
           "i_name":params.initiative_name,
-          "byuid":userId,
+          "byuid":userId, 
           "date_oc":params.dateOfCompletion.toISOString(),
           "loc":params.location ?? "India",
           "file_desc":params.file_desc??""

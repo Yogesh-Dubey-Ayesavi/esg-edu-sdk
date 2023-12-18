@@ -5,11 +5,10 @@ import { InstitutionModel } from "../../../../models/institution";
  * Registers an institution in the Supabase database.
  *
  * @param {SupabaseClient} supabase - The Supabase client instance.
- * @param {InstitutionModel} params - The parameters containing information about the institution.
+ * @param {string} institutionId - The instituion id to be deleted.
  * @returns {Promise<InstitutionModel>} - A Promise that resolves to the registered institution model.
  * @throws {Error} - Throws an error if there is an issue with the Supabase query or registration process.
  * @example
- * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
  * const institutionData = {
  *   created_at: new Date(),
  *   name: "Example Institution",
@@ -19,22 +18,21 @@ import { InstitutionModel } from "../../../../models/institution";
  *   id: "example-institution-id",
  *   handler_id: "example-handler-id"
  * };
- * const registeredInstitution = await esgSDK.registerInstitution(institutionData);
+ * const registeredInstitution = await esgSDK.deleteInstituion(institutionData.id);
  * console.log("Registered Institution:", registeredInstitution);
  */
-export default  async function registerInstitution(
+export default  async function deleteInstitution(
     supabase: SupabaseClient,
-    params: InstitutionModel
-  ): Promise<InstitutionModel> {
+    institutionId:string
+  ): Promise<Boolean> {
     try {
-      const {} = params;
-      const { data, error } = await supabase.from("institutions").insert(params).select();
+      const { data, error } = await supabase.from("institutions").delete().eq('id',institutionId);
   
       if (error) {
         throw error;
       }
   
-      return new InstitutionModel(data[0]);
+      return Boolean(true);
     } catch (error) {
       // Handle errors here (e.g., log, throw, etc.)
       console.error('Error registering institution:', error);

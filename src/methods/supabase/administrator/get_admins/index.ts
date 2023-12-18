@@ -1,5 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Administrator } from "../../../../../src/models/administrator";
+import { UserRole } from "../../../../models/enumerations";
 
 
 /**
@@ -10,7 +11,7 @@ import { Administrator } from "../../../../../src/models/administrator";
  * @throws {Error} Throws an error if there is an issue with retrieving the administrators.
  */
 export default async function getAdmins(supabase:SupabaseClient):Promise<Administrator[] | []> {
-   const {data,error} = await supabase.from("administrators").select("*,user:users(*)");
+   const {data,error} = await supabase.from("users").select("*").or(`role.eq.${UserRole.SuperAdmin},role.eq.${UserRole.InitiativeReviewer},role.eq.${UserRole.InitiativeWriter},role.eq.${UserRole.CertificateReviewer}`)
    if(error){
 
     throw error;

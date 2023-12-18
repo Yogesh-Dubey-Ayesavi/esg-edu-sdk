@@ -1,4 +1,4 @@
-import { Session, SupabaseClient, User, UserResponse, createClient } from '@supabase/supabase-js';
+import { Session, SupabaseClient, User, createClient } from '@supabase/supabase-js';
 import { getCountTotalIntiatives } from './methods/analytics/get_count_by_year_by_status';
 import getViewsByCityAndPage from "./methods/analytics/get_views_by_city_and_page";
 import getViewsByDate from "./methods/analytics/get_views_by_date";
@@ -10,7 +10,7 @@ import getInitiativeContent from "./methods/git/get_file_content";
 import updateFile from "./methods/git/update_file";
 import acceptInvitation from './methods/supabase/administrator/accept_invitation';
 import checkAuthorization from './methods/supabase/administrator/check_authorization';
-import createDiscardAdminRole from './methods/supabase/administrator/create_admin';
+import changeAdminRole from './methods/supabase/administrator/create_admin';
 import deleteAdmin from './methods/supabase/administrator/delete_admin';
 import getAdmins from './methods/supabase/administrator/get_admins';
 import inviteAdmin from './methods/supabase/administrator/invite_admin';
@@ -19,16 +19,24 @@ import signIn from "./methods/supabase/authentication/sign_in";
 import signOut from './methods/supabase/authentication/sign_out';
 import updateUserInfo from './methods/supabase/authentication/update_user_info';
 import getComments from './methods/supabase/comments/get_comments';
+import addCertificatesToDatabase from './methods/supabase/institutions/add_certificate';
+import deleteInstitution from './methods/supabase/institutions/delete_institution';
+import fetchInstitutionsByHandlerId from './methods/supabase/institutions/fetch_institution';
+import registerInstitution from './methods/supabase/institutions/register_institution';
+import { removeCertificateById } from './methods/supabase/institutions/remove_certificate';
+import uploadDocument from './methods/supabase/institutions/upload_certificates';
 import { Administrator } from './models/administrator';
+import { CertificateModel, ICertificationModel } from './models/certificate';
 import { CompositeFilter } from './models/composite_filter';
+import { UserRole } from './models/enumerations';
 import { FileComment } from './models/file_comment';
 import { InitiativeContent } from "./models/file_content";
 import { InitiativeModel } from "./models/file_model";
+import { InstitutionModel } from './models/institution';
 import { SDKInitializerConfig } from './models/sdk_initializer_config';
 import { ViewsByCityAndPageResponse } from "./models/views_by_city_and_page_response";
 import { ViewsByDateResponse } from "./models/views_by_date_response";
 import { ViewsByPageResponse } from "./models/views_by_page_response";
-import { UserRole } from './models/enumerations';
 
 /**
  * Function type for a void callback.
@@ -146,7 +154,18 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * console.log("File update success:", success);
    */
   async updateFile(fileModel : InitiativeModel,initiative: InitiativeContent): Promise<boolean> {
-    await this.supabase.from("pages").update(fileModel.toSupaJson()).eq('id',fileModel.id);
+    await this.supabase.from("pages").update({
+       path :fileModel.path,
+      closed_at: fileModel.closed_at,
+      name:fileModel.name,
+      id:fileModel.id,
+      status:fileModel.status,
+      created_at:fileModel.created_at,
+       created_by:fileModel.created_by,
+       doc:fileModel.dateOfCompletion,
+       location:fileModel.location,
+       description:fileModel.description, 
+    }).eq('id',fileModel.id);
     return await updateFile(initiative);
   }
 
@@ -326,12 +345,12 @@ async signIn(authListen : VoidCallback): Promise<Boolean> {
  * administrators roles can not delete files, and update site settings, publish pages.
  *
  * @param {string} userId - The user ID for which the "admin" role is to be created or discarded.
- * @param {boolean} is_admin_role - A boolean indicating whether to create (`true`) or discard (`false`) the "admin" role.
- * @returns {Promise<void>} A promise that resolves when the operation is successful.
+ * @param {UserRole} role - The role, you want to set for an admin
+   * @returns {Promise<void>} A promise that resolves when the operation is successful.
  * @throws {Error} Throws an error if there is an issue with the role creation or discard process.
  */
- async createDiscardAdminRole(userId:string,is_admin_role:Boolean):Promise<void>{
-   return await createDiscardAdminRole(this.supabase,userId,is_admin_role);
+ async changeAdminRole(userId:string,role:UserRole):Promise<void>{
+   return await changeAdminRole(this.supabase,userId,role);
  }
 
 
@@ -347,7 +366,7 @@ async signIn(authListen : VoidCallback): Promise<Boolean> {
  }
 
 /**
- * Retrieves a list of administrators from the Supabase "administrators" table.
+ * Retrieves a list of administrators from the Supabase "users" table.
  *
  * @returns {Promise<Administrator[] | []>} A promise that resolves to an array of Administrator objects if successful, or an empty array if there are no administrators.
  * @throws {Error} Throws an error if there is an issue with retrieving the administrators.
@@ -415,4 +434,159 @@ async getPrevMonthUndergoingInitiativeCounts(): Promise<number> {
     throw new Error('An error occurred while fetching initiative counts.');
   }
 }
+/**
+ * Uploads a certificate to the certifications table.
+ *
+ * @param {string} certName - The name of the certificate.
+ * @param {Blob} fileBlob - The Blob containing the certificate file.
+ * @returns {Promise<CertificateModel[]>} - A Promise that resolves to an array of CertificateModel instances representing the uploaded certificate.
+ * @throws {Error} Throws an error if there is an issue with the document upload or Supabase query.
+ * @example
+ * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
+ * const certName = "ExampleCertificate";
+ * const fileBlob = new Blob(["Certificate Content"], { type: "application/pdf" });
+ * const uploadedCertificates = await esgSDK.uploadCertificate(certName, fileBlob);
+ * console.log("Uploaded Certificates:", uploadedCertificates);
+ */
+async uploadCertificate(certName: string, fileBlob: Blob): Promise<CertificateModel[]> {
+  const userId = (await this.getUserInfo()).id;
+  const docName = `${userId}-cert-${certName}-${new Date().toLocaleDateString()}`;
+  const { data, error } = await uploadDocument(this.supabase, docName, fileBlob, "certifications");
+  if (error) {
+    throw error;
+  }
+  return data.map((e: ICertificationModel) => new CertificateModel(e));
+}
+
+/**
+ * Asynchronous function to register an institution.
+ * 
+ * @param {IInstitutionModel} institutionModel - The institution model to be registered.
+ * @returns {Promise<IInstitutionModel>} - A Promise that resolves to the registered institution model.
+```javascript
+// Example usage:
+const institutionInitializerData: IInstitutionInitializer = {
+  name: 'Example University',
+  city: 'Example City',
+  email: 'example@example.com',
+  phone_number: '123-456-7890',
+  address: '123 Main St',
+  established_in:'ISO_STRING,
+  website: 'http://www.exampleuniversity.com',
+  employee_size: 1000,
+  id: 'unique_identifier',
+  handler_id: 'handler123',
+};
+
+// Create an instance of InstitutionInitializer
+const institutionInitializer = new InstitutionInitializer(institutionInitializerData);
+
+// Create an instance of InstitutionModel using the initialized data
+const institutionModel = new InstitutionModel(institutionInitializer);
+
+// Call the registerInstitution function with the created institution model
+try {
+  const registeredInstitution = await registerInstitution(institutionModel);
+  console.log('Institution registered:', registeredInstitution);
+} catch (error) {
+  console.error('Error registering institution:', error.message);
+}
+```
+*/
+  async registerInstitution(institutionModel:InstitutionModel):Promise<InstitutionModel>{
+    return await registerInstitution(this.supabase,institutionModel);
+  }
+
+  /**
+ * Fetches institution details for the institution associated with the current handler.
+ * 
+ * @returns {Promise<InstitutionModel[]>} - A Promise that resolves to an array of institution models.
+ * @throws {Error} - Throws an error if there is an issue with the database query.
+ * 
+ * @example
+ * // Usage:
+ * try {
+ *   const myInstitutions = await getMyInstitutionDetails();
+ *   console.log('My Institutions:', myInstitutions);
+ * } catch (error) {
+ *   console.error('Error fetching my institutions:', error.message);
+ * }
+ */
+async  getMyInstitutionDetails(): Promise<InstitutionModel[]> {
+  return await fetchInstitutionsByHandlerId(this.supabase, /* provide your handlerId here */);
+}
+
+/**
+ * Adds multiple certificates to the database.
+ * 
+ * @param {SupabaseClient} supabase - The Supabase client used for database operations.
+ * @param {CertificateModel[]} certificates - An array of certificate models to be added.
+ * @returns {Promise<CertificateModel[]>} - A Promise that resolves to the added certificate models.
+ * @throws {Error} - Throws an error if there is an issue with the database query.
+ * 
+ * @example
+  // Usage:
+ ```javascript 
+ const certificates: CertificateModel[] = [
+    {...},
+    {...},
+    // ... add more certificate models as needed
+  ];
+ * try {
+ *   const addedCertificates = await addCertificates(certificates);
+ *   console.log('Certificates added:', addedCertificates);
+ * } catch (error) {
+ *   console.error('Error adding certificates:', error.message);
+ * }
+ ```
+ */
+
+async addCertificates(certificates:CertificateModel[]):Promise<Boolean> {
+  return await addCertificatesToDatabase(this.supabase,certificates);
+}
+
+
+/**
+ * Removes a certificate from the database by its ID.
+ * 
+ * @param {SupabaseClient} supabase - The Supabase client used for database operations.
+ * @param {string} certificateId - The ID of the certificate to be removed.
+ * @returns {Promise<void>} - A Promise that resolves when the certificate is successfully removed.
+ * @throws {Error} - Throws an error if there is an issue with the database query.
+ * 
+ * @example
+ * // Usage:
+ * const certificateId = 'someCertificateId';
+ * try {
+ *   await removeCertificates(certificateId);
+ *   console.log('Certificate removed successfully.');
+ * } catch (error) {
+ *   console.error('Error removing certificate:', error.message);
+ * }
+ */
+async removeCertificates(certificateId:string):Promise<void> {
+  return await removeCertificateById(this.supabase,certificateId);
+}
+
+/**
+ * Deletes an institution from the database based on its unique identifier.
+ *
+ * @param {string} institutionId - The unique identifier of the institution to be deleted.
+ * @returns {Promise<Boolean>} A Promise that resolves to `true` if the deletion is successful, or `false` otherwise.
+ * @throws {Error} Throws an error if the deletion process encounters any issues.
+ *
+ * @example
+ * // Using the function to delete an institution
+ * const success = await deleteInstitution(supabaseClient, 'exampleInstitutionId');
+ * if (success) {
+ *   console.log('Institution deleted successfully.');
+ * } else {
+ *   console.error('Failed to delete institution.');
+ * }
+ */
+async deleteInstitution(institutionId:string):Promise<Boolean>{
+  return await deleteInstitution(this.supabase,institutionId);
+}
+
+
 }
