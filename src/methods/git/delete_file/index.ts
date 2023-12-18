@@ -1,11 +1,11 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { FileModel } from '../../..//models/file_model';
+import { InitiativeModel } from '../../..//models/file_model';
 /**
- * Deletes a file at the specified path.
+ * Deletes a initiative at the specified path.
  * @param {supabaseClient} supabase - supabase client.
- * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file deletion was successful.
+ * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the initiative deletion was successful.
  */
-export default async function deleteFile(supabase:SupabaseClient,fileModel: FileModel): Promise<boolean> {
+export default async function deleteFile(supabase:SupabaseClient,fileModel: InitiativeModel): Promise<boolean> {
     try {
      const {data,error} = await supabase.rpc("delete_file",{
       "file_id":fileModel.id,
@@ -20,7 +20,7 @@ export default async function deleteFile(supabase:SupabaseClient,fileModel: File
      }
     } catch (error) {
       // Handle errors here (e.g., log, throw, etc.)
-      console.error('Error deleting file:', error);
+      console.error('Error deleting initiative:', error);
       throw error;
     }
   }

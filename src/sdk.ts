@@ -6,7 +6,7 @@ import getViewsByPage from "./methods/analytics/get_views_by_page";
 import createFile, { CreateFileParams } from "./methods/git/create_file";
 import deleteFile from "./methods/git/delete_file";
 import fetchFiles, { searchFiles } from "./methods/git/fetch_files";
-import getFileContent from "./methods/git/get_file_content";
+import getInitiativeContent from "./methods/git/get_file_content";
 import updateFile from "./methods/git/update_file";
 import acceptInvitation from './methods/supabase/administrator/accept_invitation';
 import checkAuthorization from './methods/supabase/administrator/check_authorization';
@@ -22,8 +22,8 @@ import getComments from './methods/supabase/comments/get_comments';
 import { Administrator } from './models/administrator';
 import { CompositeFilter } from './models/composite_filter';
 import { FileComment } from './models/file_comment';
-import { FileContent } from "./models/file_content";
-import { FileModel } from "./models/file_model";
+import { InitiativeContent } from "./models/file_content";
+import { InitiativeModel } from "./models/file_model";
 import { SDKInitializerConfig } from './models/sdk_initializer_config';
 import { ViewsByCityAndPageResponse } from "./models/views_by_city_and_page_response";
 import { ViewsByDateResponse } from "./models/views_by_date_response";
@@ -36,7 +36,7 @@ type VoidCallback = (user : User | undefined, session : Session | null) => void;
 
 
 /**
- * The EsgSDK class provides methods for file management and analytics using the ESG API.
+ * The EsgSDK class provides methods for initiative management and analytics using the ESG API.
  * It follows the Singleton pattern to ensure a single instance is used throughout the application.
  * @class
  */
@@ -78,10 +78,10 @@ export default class EsgSDK {
   
   }
   /**
- * Creates a file with the specified parameters using the Supabase stored procedure.
+ * Creates a initiative with the specified parameters using the Supabase stored procedure.
  *
- * @param {CreateFileParams} params - The parameters for creating a new file.
- * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file creation was successful.
+ * @param {CreateFileParams} params - The parameters for creating a new initiative.
+ * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the initiative creation was successful.
  * @throws {Error} Throws an error if there is an issue with the Supabase query.
  * @example
  
@@ -101,16 +101,16 @@ async createFile(params: CreateFileParams): Promise<boolean> {
 }
 
     /**
-   * Fetches a list of FileModel instances from the specified API endpoint.
+   * Fetches a list of InitiativeModel instances from the specified API endpoint.
    * @param {string} dir - The directory parameter for the API endpoint. Must be one of "environment", "social", "governance".
-   * @returns {Promise<FileModel[]>} - A Promise that resolves to an array of FileModel instances.
+   * @returns {Promise<InitiativeModel[]>} - A Promise that resolves to an array of InitiativeModel instances.
    * @example
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
    * const directory = "environment";
    * const files = await esgSDK.fetchFiles(directory);
-   * console.log("Fetched Files:", files.map((file) => new FileModel(file)));
+   * console.log("Fetched Files:", files.map((initiative) => new InitiativeModel(initiative)));
    */
-  async fetchFiles(dir: string): Promise<FileModel[]> {
+  async fetchFiles(dir: string): Promise<InitiativeModel[]> {
     return await fetchFiles(this.supabase, dir);
   }
 
@@ -118,24 +118,24 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * Searches for files based on the provided filter in the specified API endpoint.
    * @param {string} dir - The directory parameter for the API endpoint. Must be one of "environment", "social", "governance".
    * @param {CompositeFilter} filter - The composite filter to apply to the search.
-   * @returns {Promise<FileModel[]>} - A Promise that resolves to an array of FileModel instances matching the search criteria.
+   * @returns {Promise<InitiativeModel[]>} - A Promise that resolves to an array of InitiativeModel instances matching the search criteria.
    * @example
    * const directory = "environment";
    * const filter = { field_name: "name", key: "energy" };
    * const searchResult = await esgSDK.searchFiles(directory, filter);
-   * console.log("Search Result:", searchResult.map((file) => new FileModel(file)));
+   * console.log("Search Result:", searchResult.map((initiative) => new InitiativeModel(initiative)));
    */
-  async searchFiles(dir: string, filter: CompositeFilter): Promise<FileModel[]> {
+  async searchFiles(dir: string, filter: CompositeFilter): Promise<InitiativeModel[]> {
     return await searchFiles(this.supabase, dir, filter);
   }
   
 
   /**
-   * Updates a file with the specified content at the given path.
-   * @param {FileContent} file - The file content parameters.
-   * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file update was successful.
+   * Updates a initiative with the specified content at the given path.
+   * @param {InitiativeContent} initiative - The initiative content parameters.
+   * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the initiative update was successful.
    * @example
-   * const fileContentInstance = new FileContent({
+   * const fileContentInstance = new InitiativeContent({
    *   sha: "abc123",
    *   path: " environment ",
    *   name: "initiative name",
@@ -144,45 +144,45 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * const success = await esgSDK.updateFile(fileContentInstance,fileModelInstance);
    * console.log("File update success:", success);
    */
-  async updateFile(fileModel : FileModel,file: FileContent): Promise<boolean> {
+  async updateFile(fileModel : InitiativeModel,initiative: InitiativeContent): Promise<boolean> {
     await this.supabase.from("pages").update(fileModel.toSupaJson()).eq('id',fileModel.id);
-    return await updateFile(file);
+    return await updateFile(initiative);
   }
 
   /**
-   * Fetches the content of a file from the specified API endpoint.
+   * Fetches the content of a initiative from the specified API endpoint.
    * @param {string} dir - The directory parameter. Must be one of "environment", "social", "governance".
-   * @param {FileModel} fileModel - The name of the file without extension.
-   * @returns {Promise<FileContent>} - A Promise that resolves to the content of the specified file.
+   * @param {fileId} fileId - The id of the initiative from [InitiativeModel].
+   * @returns {Promise<InitiativeContent>} - A Promise that resolves to the content of the specified initiative.
    * @example
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
    * const dir = "environment";
    * const fileName = "sflsj-fsdafjlj-jfas"; // Mostly a uuid 
-   * const fileContentInstance = await esgSDK.getFileContent(dir, fileModelInstance); // File Model instance fetched from listing files [fetchFiles]
-   * console.log("File Content:", new FileContent(fileContentInstance));
+   * const fileContentInstance = await esgSDK.getInitiativeContent(dir, fileModelInstance); // File Model instance fetched from listing files [fetchFiles]
+   * console.log("File Content:", new InitiativeContent(fileContentInstance));
    */
-  async getFileContent(dir: string, fileModel:FileModel): Promise<FileContent> {
-    return await getFileContent(dir, fileModel);
+  async getInitiativeContent(dir: string, fileId:string): Promise<InitiativeContent> {
+    return await getInitiativeContent(dir, fileId);
   }
 
   /**
-   * Deletes a file at the specified path.
-   * @param {FileContent} fileContent - The file  model representing the file to be deleted.
-   * @param {FileModel} fileModel - The file content model representing the file to be deleted.
-   * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the file deletion was successful.
+   * Deletes a initiative at the specified path.
+   * @param {InitiativeContent} fileContent - The initiative  model representing the initiative to be deleted.
+   * @param {InitiativeModel} fileModel - The initiative content model representing the initiative to be deleted.
+   * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the initiative deletion was successful.
    * @example
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
-   * const fileContentInstance = new FileContent({
+   * const fileContentInstance = new InitiativeContent({
    *   sha: "abc123",
    *   path: " environment/file1 ",
    *   name: "file1 ",
-   *   type: "file",
+   *   type: "initiative",
    *   content: "content string"
    * });
    * const success = await esgSDK.deleteFile(fileContentInstance);
    * console.log("File deletion success:", success);
    */
-  async deleteFile(fileModel:FileModel,fileContent:FileContent): Promise<boolean> {
+  async deleteFile(fileModel:InitiativeModel,fileContent:InitiativeContent): Promise<boolean> {
    
     return await deleteFile(this.supabase,fileModel.copyWith({sha:fileContent.sha}));
   }

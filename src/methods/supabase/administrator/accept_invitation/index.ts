@@ -15,9 +15,7 @@ export default async function acceptInvitation(supabase:SupabaseClient,accessTok
             "access_token":accessToken
         })).data){
          if ( await signIn(supabase,(a,b)=>{})){
-          await supabase.from("administrators").insert({
-            "user_id":(await supabase.auth.getUser()).data.user?.id
-          });
+      
           return Boolean(true);
          }else{
             throw "Unable to assign role"

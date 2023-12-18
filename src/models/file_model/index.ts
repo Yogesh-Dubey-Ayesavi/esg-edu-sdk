@@ -1,64 +1,64 @@
 /**
- * Represents a file model with properties related to a file.
+ * Represents a initiative model with properties related to a initiative.
  * @interface
  */
-export interface IFileModel {
+export interface IInitiativeModel {
   /**
-   * The SHA hash of the file.
+   * The SHA hash of the initiative.
    * @type {string}
    */
   sha: string | undefined;
 
   /**
-   * The path of the file, including filename without extension
+   * The path of the initiative, including filename without extension
    * @type {string}
    */
   path: string;
 
   /**
-   * The name of the file.
+   * The name of the initiative.
    * @type {string}
    */
   name: string;
 
   /**
-   * The type of the file.
+   * The type of the initiative.
    * @type {string}
    */
   type: string;
 
   /**
-   * The description of the file.
+   * The description of the initiative.
    * @type {string | undefined}
    */
   description?: string;
 
   /**
-   * The ID of the file.
+   * The ID of the initiative.
    * @type {string}
    */
   id: string;
 
   /**
-   * The creation date of the file.
+   * The creation date of the initiative.
    * @type {Date}
    */
   created_at: Date;
 
   /**
-   * The creator of the file.
+   * The creator of the initiative.
    * @type {string}
    */
   created_by: string;
 
   /**
-   * The date of completion for the file.
+   * The date of completion for the initiative.
    * @type {Date}
    */
   dateOfCompletion: Date;
 
   /**
-   * The location of the file.
+   * The location of the initiative.
    * @type {string}
    */
   location: string;
@@ -69,7 +69,7 @@ export interface IFileModel {
  updated_at: string|undefined;
 
    /**
-   * The status of the file.
+   * The status of the initiative.
    * @type {('completed' | 'undergoing' | 'stopped' | 'delayed' | 'neverending')}
    */
    status: 'completed' | 'undergoing' | 'stopped' | 'delayed' | 'neverending';
@@ -83,61 +83,61 @@ export interface IFileModel {
 }
 
 /**
- * Represents a file model with properties related to a file.
+ * Represents a initiative model with properties related to a initiative.
  * @class
- * @implements {IFileModel}
+ * @implements {IInitiativeModel}
  */
-export class FileModel implements IFileModel {
+export class InitiativeModel implements IInitiativeModel {
   /**
-   * The SHA hash of the file.
+   * The SHA hash of the initiative.
    * @type {string}
    */
   sha: string | undefined;
 
   /**
-      * The path of the file, including the file name without extension
+      * The path of the initiative, including the initiative name without extension
    * @type {string}
    */
   path: string;
 
   /**
-   * The name of the file without extension.
+   * The name of the initiative without extension.
    * @type {string}
    */
   name: string;
 
   /**
-   * The type of the file.
+   * The type of the initiative.
    * @type {string}
    */
   type: string;
 
   /**
-   * The description of the file.
+   * The description of the initiative.
    * @type {string | undefined}
    */
   description?: string;
 
   /**
-   * The ID of the file.
+   * The ID of the initiative.
    * @type {string}
    */
   id: string;
 
   /**
-   * The creation date of the file.
+   * The creation date of the initiative.
    * @type {Date}
    */
   created_at: Date;
 
   /**
-   * The creator of the file.
+   * The creator of the initiative.
    * @type {string}
    */
   created_by: string;
 
   /**
-   * The date of completion for the file.
+   * The date of completion for the initiative.
    * @type {Date}
    */
   dateOfCompletion: Date;
@@ -156,12 +156,12 @@ export class FileModel implements IFileModel {
   updated_at: string|undefined;
 
   /**
-   * Creates an instance of FileModel.
-   * @param {IFileModel} data - The data to initialize the file model.
+   * Creates an instance of InitiativeModel.
+   * @param {IInitiativeModel} data - The data to initialize the initiative model.
    */
 
     /**
-   * The status of the file.
+   * The status of the initiative.
    * @type {('completed' | 'undergoing' | 'stopped' | 'delayed' | 'neverending')}
    */
     status: 'completed' | 'undergoing' | 'stopped' | 'delayed' | 'neverending';
@@ -169,13 +169,13 @@ export class FileModel implements IFileModel {
 
 
     /**
-   * The date the file was closed.
+   * The date the initiative was closed.
    * @type {string | undefined}
    */
   closed_at: string | undefined;
 
 
-  constructor(data: IFileModel) {
+  constructor(data: IInitiativeModel) {
     this.sha = data.sha;
     this.path = data.path;
     this.name = data.name;
@@ -208,12 +208,12 @@ export class FileModel implements IFileModel {
   }
 
    /**
-   * Creates a new instance of FileModel with specified changes.
-   * @param {Partial<IFileModel>} changes - The changes to apply to the file model.
-   * @returns {FileModel} - A new instance of FileModel with the specified changes.
+   * Creates a new instance of InitiativeModel with specified changes.
+   * @param {Partial<IInitiativeModel>} changes - The changes to apply to the initiative model.
+   * @returns {InitiativeModel} - A new instance of InitiativeModel with the specified changes.
    */
-   copyWith(changes: Partial<IFileModel>): FileModel {
-    return new FileModel({
+   copyWith(changes: Partial<IInitiativeModel>): InitiativeModel {
+    return new InitiativeModel({
       status:changes.status !== undefined ? changes.status:this.status,
       updated_at:changes.updated_at !== undefined ? changes.updated_at:this.updated_at,
       sha: changes.sha !== undefined ? changes.sha : this.sha,

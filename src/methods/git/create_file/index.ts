@@ -1,5 +1,4 @@
   import { SupabaseClient } from '@supabase/supabase-js';
-import { FileContent } from "../../../models/file_content";
 
 
 
@@ -26,17 +25,17 @@ import { FileContent } from "../../../models/file_content";
       }
 
     } catch (error) {
-      console.error('Error creating file:', error);
+      console.error('Error creating initiative:', error);
       throw new Error('File creation failed'); // You can customize the error message as needed
     }
   }
 
 /**
- * Represents the parameters for creating a new file.
+ * Represents the parameters for creating a new initiative.
  * @interface
  */
 /**
- * Represents the parameters for creating a new file.
+ * Represents the parameters for creating a new initiative.
  * @interface
  */
 export interface CreateFileParams {
@@ -47,25 +46,25 @@ export interface CreateFileParams {
   dir: string;
 
   /**
-   * The date of completion for the file.
+   * The date of completion for the initiative.
    * @type {Date}
    */
   dateOfCompletion: Date;
 
   /**
-   * The location of the file.
+   * The location of the initiative.
    * @type {string | undefined}
    */
   location?: string | undefined;
 
   /**
-   * The description of the file.
+   * The description of the initiative.
    * @type {string | undefined}
    */
   file_desc?: string | undefined;
 
   /**
-   * The content of the file.
+   * The content of the initiative.
    * @type {string}
    */
   content: string;

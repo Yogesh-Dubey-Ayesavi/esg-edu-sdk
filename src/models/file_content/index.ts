@@ -1,108 +1,108 @@
 
 /**
- * Represents a file content model with properties related to a file.
+ * Represents a initiative content model with properties related to a initiative.
  * @interface
  */
-export interface IFileContent {
+export interface IInitiativeContent {
     /**
-     * The SHA hash of the file.
+     * The SHA hash of the initiative.
      * @type {string}
      */
     sha: string;
   
     /**
-     * The path of the file, including the file name.
+     * The path of the initiative, including the initiative name.
      * @type {string}
      */
     path: string;
   
     /**
-     * The name of the file.
+     * The name of the initiative.
      * @type {string}
      */
     name: string;
   
     /**
-     * The type of the file.
+     * The type of the initiative.
      * @type {string}
      */
     type: string;
   
     /**
-     * The content of the file.
+     * The content of the initiative.
      * @type {string}
      */
     content: string;
   }
   
   /**
-   * Represents a file content model with properties related to a file.
+   * Represents a initiative content model with properties related to a initiative.
    * @class
-   * @implements {IFileContent}
+   * @implements {IInitiativeContent}
    /**
  * Example usage:
  *
- * const fileContentData: IFileContent = {
+ * const fileContentData: IInitiativeContent = {
  *   sha: "abc123",
  *   path: "docs/environment/file1.mdx",
  *   name: "file1.md",
- *   type: "file",
+ *   type: "initiative",
  *   content: "content string"
  * };
  *
- * const fileContentInstance = new FileContent(fileContentData);
+ * const fileContentInstance = new InitiativeContent(fileContentData);
  *
  * // Accessing properties
  * console.log(fileContentInstance.sha);      // Output: abc123
  * console.log(fileContentInstance.path);     // Output: docs/environment/file1.mdx
  * console.log(fileContentInstance.name);     // Output: file1.md
- * console.log(fileContentInstance.type);     // Output: file
+ * console.log(fileContentInstance.type);     // Output: initiative
  * console.log(fileContentInstance.content);  // Output: content string
  */
 
-  export class FileContent implements IFileContent {
+  export class InitiativeContent implements IInitiativeContent {
     /**
-     * The SHA hash of the file.
+     * The SHA hash of the initiative.
      * @type {string}
      */
     sha: string;
   
     /**
-     * The path of the file, including the file name without extension.
+     * The path of the initiative, including the initiative name without extension.
      * @type {string}
      */
     path: string;
   
     /**
-     * The name of the file without extension.
+     * The name of the initiative without extension.
      * @type {string}
      */
     name: string;
   
     /**
-     * The type of the file.
+     * The type of the initiative.
      * @type {string}
      */
     type: string;
   
     /**
-     * The content of the file.
+     * The content of the initiative.
      * @type {string}
      */
     content: string;
   
      /**
       * 
-      *   * Creates an instance of FileContent.
-     * @param {IFileContent} data - The data to initialize the file content model.
+      *   * Creates an instance of InitiativeContent.
+     * @param {IInitiativeContent} data - The data to initialize the initiative content model.
      * 
-     * #### Note : While creating a new file provide `SHA` as `""`. 
-     * #### `SHA` hash is mandatory when updating or deleting a file
+     * #### Note : While creating a new initiative provide `SHA` as `""`. 
+     * #### `SHA` hash is mandatory when updating or deleting a initiative
     
     Example usage:
     ```javascript
  
-  const fileContentData: IFileContent = {
+  const fileContentData: IInitiativeContent = {
     sha: "abc123",
     path: "docs/environment/file1",
     name: "file1.md",
@@ -111,7 +111,7 @@ export interface IFileContent {
   };
     ```
      */
-    constructor(data: IFileContent) {
+    constructor(data: IInitiativeContent) {
       this.sha = data.sha;
       this.path = data.path;
       this.name = data.name;
