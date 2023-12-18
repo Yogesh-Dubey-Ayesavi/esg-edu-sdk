@@ -1,5 +1,3 @@
-import { UserRole } from "../enumerations/user_role";
-
 /**
  * Represents an administrator with properties related to an admin user.
  * @interface
@@ -29,11 +27,11 @@ export interface IAdministrator {
      */
     created_at: string;
   
-     /**
-     * Defines the user role.
-     * @type {UserRole}
+    /**
+     * Indicates whether the user is an administrator.
+     * @type {boolean}
      */
-     role: UserRole;
+    is_admin: boolean;
   }
   
   /**
@@ -67,10 +65,10 @@ export interface IAdministrator {
     created_at: string;
   
     /**
-     * Defines the user role.
-     * @type {UserRole}
+     * Indicates whether the user is an administrator.
+     * @type {boolean}
      */
-    role: UserRole;
+    is_admin: boolean;
   
     /**
      * Creates an instance of Administrator.
@@ -81,7 +79,7 @@ export interface IAdministrator {
       this.avatar_url = data.avatar_url;
       this.id = data.id;
       this.created_at = data.created_at;
-      this.role = data.role;
+      this.is_admin = data.is_admin;
     }
   }
   
