@@ -1,6 +1,10 @@
 {
   "name": "esg-sdk",
+<<<<<<< HEAD
   "version": "4.0.3",
+=======
+  "version": "4.0.2",
+>>>>>>> a2626bf5cabbbb7cfe51b43e5507ce4944d89787
   "description": "A full fledged module for esg management",
   "main": "dist/index.js",
   "repository": {
