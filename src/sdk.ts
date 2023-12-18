@@ -101,9 +101,9 @@ export default class EsgSDK {
    * @example
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
    * const dir = "environment";
-   * const fileName = "file1";
-   * const fileContentInstance = await esgSDK.getFileContent(dir, fileName);
-   * console.log("File Content:", new FileContent(fileContentInstance));
+   * const fileName = "sflsj-fsdafjlj-jfas"; // Mostly a uuid 
+   * const fileContentInstance = await esgSDK.getInitiativeContent(dir, fileId); // File Model instance fetched from listing files [fetchFiles]
+   * console.log("File Content:", new InitiativeContent(fileContentInstance));
    */
   async getFileContent(dir: string, fileName: string): Promise<FileContent> {
     return await getFileContent(dir, fileName);
