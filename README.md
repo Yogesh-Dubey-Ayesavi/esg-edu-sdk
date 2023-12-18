@@ -11,8 +11,8 @@ npm install esg-sdk
 ## Usage
 
 ```typescript
-// Example usage of the EsgSDK class with FileContent and FileModel
-import { EsgSDK, FileContent, FileModel } from "esg-sdk";
+// Example usage of the EsgSDK class with InitiativeContent and InitiativeModel
+import { EsgSDK, InitiativeContent, InitiativeModel } from "esg-sdk";
 
 // Initialize the EsgSDK singleton instance
 const esgSDK = EsgSDK.initialize({
@@ -29,7 +29,7 @@ EsgSDK instance once initilized can be obtained anywhere just by calling static 
 const sdk = EsgSDK.getInstance;
 
 // Example file content data
-const fileContentData = new FileContent({
+const fileContentData = new InitiativeContent({
   sha: "abc123",
   path: "environment/file1",
   name: "file1",
@@ -38,45 +38,45 @@ const fileContentData = new FileContent({
 });
 
 // Example file model data
-const fileModelData = new FileModel({
+const fileModelData = new InitiativeModel({
   sha: "def456",
   path: "social/file2",
   name: "file2",
   type: "file"
 });
 
-// Using createFile method with FileContent
+// Using createFile method with InitiativeContent
 async function createFileExample() {
-  const fileContentInstance = new FileContent(fileContentData);
+  const fileContentInstance = new InitiativeContent(fileContentData);
   const success = await esgSDK.createFile(fileContentInstance);
   console.log("File creation success:", success);
 }
 
-// Using fetchFiles method with FileModel
+// Using fetchFiles method with InitiativeModel
 async function fetchFilesExample() {
   const directory = "environment";
   const files = await esgSDK.fetchFiles(directory);
-  console.log("Fetched Files:", files.map(file => new FileModel(file)));
+  console.log("Fetched Files:", files.map(file => new InitiativeModel(file)));
 }
 
-// Using updateFile method with FileContent
+// Using updateFile method with InitiativeContent
 async function updateFileExample() {
-  const fileContentInstance = new FileContent(fileContentData);
+  const fileContentInstance = new InitiativeContent(fileContentData);
   const success = await esgSDK.updateFile(fileContentInstance);
   console.log("File update success:", success);
 }
 
-// Using getFileContent method with FileContent
-async function getFileContentExample() {
+// Using getInitiativeContent method with InitiativeContent
+async function getInitiativeContentExample() {
   const dir = "environment";
   const fileName = "file1";
-  const fileContentInstance = await esgSDK.getFileContent(dir, fileName);
-  console.log("File Content:", new FileContent(fileContentInstance));
+  const fileContentInstance = await esgSDK.getInitiativeContent(dir, fileName);
+  console.log("File Content:", new InitiativeContent(fileContentInstance));
 }
 
-// Using deleteFile method with FileContent
+// Using deleteFile method with InitiativeContent
 async function deleteFileExample() {
-  const fileContentInstance = new FileContent(fileContentData);
+  const fileContentInstance = new InitiativeContent(fileContentData);
   const success = await esgSDK.deleteFile(fileContentInstance);
   console.log("File deletion success:", success);
 }
@@ -188,23 +188,23 @@ try {
 
 ## Methods
 
-### `createFile(file: FileContent): Promise<boolean>`
+### `createFile(file: InitiativeContent): Promise<boolean>`
 
 Creates a file with the specified content at the given path.
 
-### `fetchFiles(dir: string): Promise<FileModel[]>`
+### `fetchFiles(dir: string): Promise<InitiativeModel[]>`
 
-Fetches a list of FileModel instances from the specified API endpoint.
+Fetches a list of InitiativeModel instances from the specified API endpoint.
 
-### `updateFile(file: FileContent): Promise<boolean>`
+### `updateFile(file: InitiativeContent): Promise<boolean>`
 
 Updates a file with the specified content at the given path.
 
-### `getFileContent(dir: string, fileName: string): Promise<FileContent>`
+### `getInitiativeContent(dir: string, fileName: string): Promise<InitiativeContent>`
 
 Fetches the content of a file from the specified API endpoint.
 
-### `deleteFile(fileContent: FileContent): Promise<boolean>`
+### `deleteFile(fileContent: InitiativeContent): Promise<boolean>`
 
 Deletes a file at the specified path.
 

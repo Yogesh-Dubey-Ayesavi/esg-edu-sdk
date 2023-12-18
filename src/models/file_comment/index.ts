@@ -1,5 +1,5 @@
 /**
- * Represents a file comment model with properties related to a comment.
+ * Represents a initiative comment model with properties related to a comment.
  * @interface
  */
 export interface IFileComment {
@@ -35,7 +35,7 @@ export interface IFileComment {
   }
   
   /**
-   * Represents a file comment model with properties related to a comment.
+   * Represents a initiative comment model with properties related to a comment.
    * @class
    * @implements {IFileComment}
    */
@@ -72,7 +72,7 @@ export interface IFileComment {
   
     /**
      * Creates an instance of FileComment.
-     * @param {IFileComment} data - The data to initialize the file comment model.
+     * @param {IFileComment} data - The data to initialize the initiative comment model.
      */
     constructor(data: IFileComment) {
       this.ip_address = data.ip_address;
