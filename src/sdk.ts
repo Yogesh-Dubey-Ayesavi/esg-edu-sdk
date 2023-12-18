@@ -32,7 +32,10 @@ import { UserRole } from './models/enumerations';
 import { FileComment } from './models/file_comment';
 import { InitiativeContent } from "./models/file_content";
 import { InitiativeModel } from "./models/file_model";
+import InitiativeCountByLocation, { IInitiativeCountByLocation } from './models/initiative_count_by_location';
 import { InstitutionModel } from './models/institution';
+import PerMonthIntiativeCountByYearResponseModel, { IPerMonthIntiativeCountByYearResponse } from './models/per_month_initiative_count_by_year_response';
+import PerYearCreatedClosedInitiativeCount from './models/per_year_closed_created_initiative_response';
 import { SDKInitializerConfig } from './models/sdk_initializer_config';
 import { ViewsByCityAndPageResponse } from "./models/views_by_city_and_page_response";
 import { ViewsByDateResponse } from "./models/views_by_date_response";
@@ -103,7 +106,6 @@ export default class EsgSDK {
  *   initiative_name: "Initiative Name"
  * };
  * const success = await esgSDK.createFile(createParams);
- * console.log("File creation success:", success);
  */
 async createFile(params: CreateFileParams): Promise<boolean> {
   return await createFile(this.supabase, params);
@@ -117,7 +119,6 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
    * const directory = "environment";
    * const files = await esgSDK.fetchFiles(directory);
-   * console.log("Fetched Files:", files.map((initiative) => new InitiativeModel(initiative)));
    */
   async fetchFiles(dir: string): Promise<InitiativeModel[]> {
     return await fetchFiles(this.supabase, dir);
@@ -132,7 +133,6 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * const directory = "environment";
    * const filter = { field_name: "name", key: "energy" };
    * const searchResult = await esgSDK.searchFiles(directory, filter);
-   * console.log("Search Result:", searchResult.map((initiative) => new InitiativeModel(initiative)));
    */
   async searchFiles(dir: string, filter: CompositeFilter): Promise<InitiativeModel[]> {
     return await searchFiles(this.supabase, dir, filter);
@@ -151,7 +151,6 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    *   content: "updated content string"
    * });
    * const success = await esgSDK.updateFile(fileContentInstance,fileModelInstance);
-   * console.log("File update success:", success);
    */
   async updateFile(fileModel : InitiativeModel,initiative: InitiativeContent): Promise<boolean> {
     await this.supabase.from("pages").update({
@@ -179,7 +178,6 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * const dir = "environment";
    * const fileName = "sflsj-fsdafjlj-jfas"; // Mostly a uuid 
    * const fileContentInstance = await esgSDK.getInitiativeContent(dir, fileModelInstance); // File Model instance fetched from listing files [fetchFiles]
-   * console.log("File Content:", new InitiativeContent(fileContentInstance));
    */
   async getInitiativeContent(dir: string, fileId:string): Promise<InitiativeContent> {
     return await getInitiativeContent(dir, fileId);
@@ -200,7 +198,6 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    *   content: "content string"
    * });
    * const success = await esgSDK.deleteFile(fileContentInstance);
-   * console.log("File deletion success:", success);
    */
   async deleteFile(fileModel:InitiativeModel,fileContent:InitiativeContent): Promise<boolean> {
    
@@ -216,9 +213,7 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * // Using the function to fetch views by date
    * try {
    *   const viewsByDateData = await esgSDK.getViewsByDate();
-   *   console.log(viewsByDateData);
    * } catch (error) {
-   *   console.error(`Error fetching views by date: ${error}`);
    * }
    */
   async getViewsByDate(): Promise<ViewsByDateResponse[]> {
@@ -234,9 +229,7 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * // Using the function to fetch per-page views
    * try {
    *   const perPageViewsData = await esgSDK.getViewsByPage();
-   *   console.log(perPageViewsData);
    * } catch (error) {
-   *   console.error(`Error fetching per-page views: ${error}`);
    * }
    */
   async getViewsByPage(): Promise<ViewsByPageResponse[]> {
@@ -252,9 +245,7 @@ async createFile(params: CreateFileParams): Promise<boolean> {
    * // Using the function to fetch views by city and page
    * try {
    *   const viewsByCityAndPageData = await esgSDK.getViewsByCityAndPage();
-   *   console.log(viewsByCityAndPageData);
    * } catch (error) {
-   *   console.error(`Error fetching views by city and page: ${error}`);
    * }
    */
   async getViewsByCityAndPage(): Promise<ViewsByCityAndPageResponse[]> {
@@ -430,7 +421,6 @@ async getPrevMonthUndergoingInitiativeCounts(): Promise<number> {
     return count ?? 0;
   } catch (error) {
     // Handle the error, log it, or rethrow if necessary
-    console.error(error);
     throw new Error('An error occurred while fetching initiative counts.');
   }
 }
@@ -446,7 +436,6 @@ async getPrevMonthUndergoingInitiativeCounts(): Promise<number> {
  * const certName = "ExampleCertificate";
  * const fileBlob = new Blob(["Certificate Content"], { type: "application/pdf" });
  * const uploadedCertificates = await esgSDK.uploadCertificate(certName, fileBlob);
- * console.log("Uploaded Certificates:", uploadedCertificates);
  */
 async uploadCertificate(certName: string, fileBlob: Blob): Promise<CertificateModel[]> {
   const userId = (await this.getUserInfo()).id;
@@ -487,9 +476,7 @@ const institutionModel = new InstitutionModel(institutionInitializer);
 // Call the registerInstitution function with the created institution model
 try {
   const registeredInstitution = await registerInstitution(institutionModel);
-  console.log('Institution registered:', registeredInstitution);
 } catch (error) {
-  console.error('Error registering institution:', error.message);
 }
 ```
 */
@@ -507,9 +494,7 @@ try {
  * // Usage:
  * try {
  *   const myInstitutions = await getMyInstitutionDetails();
- *   console.log('My Institutions:', myInstitutions);
  * } catch (error) {
- *   console.error('Error fetching my institutions:', error.message);
  * }
  */
 async  getMyInstitutionDetails(): Promise<InstitutionModel[]> {
@@ -534,9 +519,7 @@ async  getMyInstitutionDetails(): Promise<InstitutionModel[]> {
   ];
  * try {
  *   const addedCertificates = await addCertificates(certificates);
- *   console.log('Certificates added:', addedCertificates);
  * } catch (error) {
- *   console.error('Error adding certificates:', error.message);
  * }
  ```
  */
@@ -559,9 +542,7 @@ async addCertificates(certificates:CertificateModel[]):Promise<Boolean> {
  * const certificateId = 'someCertificateId';
  * try {
  *   await removeCertificates(certificateId);
- *   console.log('Certificate removed successfully.');
  * } catch (error) {
- *   console.error('Error removing certificate:', error.message);
  * }
  */
 async removeCertificates(certificateId:string):Promise<void> {
@@ -579,13 +560,73 @@ async removeCertificates(certificateId:string):Promise<void> {
  * // Using the function to delete an institution
  * const success = await deleteInstitution(supabaseClient, 'exampleInstitutionId');
  * if (success) {
- *   console.log('Institution deleted successfully.');
  * } else {
- *   console.error('Failed to delete institution.');
  * }
  */
 async deleteInstitution(institutionId:string):Promise<Boolean>{
   return await deleteInstitution(this.supabase,institutionId);
+}
+/**
+ * Retrieves the per-month initiative count for a given year.
+ *
+ * @param {number} year - The year for which to retrieve per-month initiative counts.
+ * @returns {Promise<PerMonthIntiativeCountByYearResponseModel[]>} A promise that resolves to an array of PerMonthIntiativeCountByYearResponseModel instances.
+ * @throws Throws an error if there is an issue with the Supabase RPC call.
+ */
+
+async getPerMonthIntiativeCountByYear(year:number):Promise<PerMonthIntiativeCountByYearResponseModel[]> {
+    const {data,error} = await this.supabase.rpc("get_initiative_counts_by_month",{
+      "p_year":year
+    });
+
+    if(error){
+      throw error;
+    }
+
+
+    return data.map((e:IPerMonthIntiativeCountByYearResponse)=>{return new PerMonthIntiativeCountByYearResponseModel(e)});
+}
+
+
+/**
+ * Retrieves the total count of created and closed initiatives for a given year.
+ *
+ * @param {number} year - The year for which to retrieve initiative counts.
+ * @returns {Promise<PerYearCreatedClosedInitiativeCount>} A promise that resolves to a PerYearCreatedClosedInitiativeCount instance.
+ * @throws Throws an error if there is an issue with the Supabase RPC call.
+ */
+
+  async  getPerYearCreatedClosedInitiatives(year:number):Promise<PerYearCreatedClosedInitiativeCount> {
+  const {data,error} = await this.supabase.rpc("get_initiatives_counts_by_year",{
+    "p_year":year
+  });
+
+  if(error){
+    throw error;
+  }
+
+
+ return  new PerYearCreatedClosedInitiativeCount(data);
+}
+
+
+/**
+ * Retrieves the total initiative count grouped by location.
+ *
+ * @returns {Promise<InitiativeCountByLocation[]>} A promise that resolves to an array of InitiativeCountByLocation instances.
+ * @throws Throws an error if there is an issue with the Supabase RPC call.
+ */
+async getInitiativeCountByLocation():Promise<InitiativeCountByLocation[]> {
+  const {data,error} = await this.supabase.rpc("get_total_initiative_count_by_location",{
+    
+  });
+
+  if(error){
+    throw error;
+  }
+  return  data.map((e:IInitiativeCountByLocation)=> new InitiativeCountByLocation({
+    location_name:e.location_name,total_initiative_count:e.total_initiative_count
+  }));
 }
 
 
