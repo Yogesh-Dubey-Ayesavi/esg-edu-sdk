@@ -186,22 +186,14 @@ async createFile(params: CreateFileParams): Promise<boolean> {
   /**
    * Deletes a initiative at the specified path.
    * @param {InitiativeContent} fileContent - The initiative  model representing the initiative to be deleted.
-   * @param {InitiativeModel} fileModel - The initiative content model representing the initiative to be deleted.
+   * @param {string} sha - The sha of the file content.
    * @returns {Promise<boolean>} - A Promise that resolves to a boolean indicating whether the initiative deletion was successful.
    * @example
-   * const esgSDK = EsgSDK.initialize("your-analytics-api-key");
-   * const fileContentInstance = new InitiativeContent({
-   *   sha: "abc123",
-   *   path: " environment/file1 ",
-   *   name: "file1 ",
-   *   type: "initiative",
-   *   content: "content string"
-   * });
-   * const success = await esgSDK.deleteFile(fileContentInstance);
+  
    */
-  async deleteFile(fileModel:InitiativeModel,fileContent:InitiativeContent): Promise<boolean> {
+  async deleteFile(fileModel:InitiativeModel,sha:string): Promise<boolean> {
    
-    return await deleteFile(this.supabase,fileModel.copyWith({sha:fileContent.sha}));
+    return await deleteFile(this.supabase,fileModel,sha);
   }
 
   /**
@@ -629,6 +621,33 @@ async getInitiativeCountByLocation():Promise<InitiativeCountByLocation[]> {
   }));
 }
 
+
+/**
+ * Asynchronously retrieves the count of initiatives by a specified status from a Supabase table.
+ *
+ * @param {string} status - The status for which to retrieve the initiative count.
+ * @returns {Promise<number>} A promise that resolves to the count of initiatives with the specified status.
+ *
+ * @throws {Error} If there is an issue with the Supabase query or if an error occurs during execution.
+ *
+ * @example
+ * // Usage example:
+ * try {
+ *   const status = 'active';
+ *   const initiativeCount = await getInitiativeCountByStatus(status);
+ *   console.log(`Number of initiatives with status '${status}': ${initiativeCount}`);
+ * } catch (error) {
+ *   console.error(`Error retrieving initiative count: ${error.message}`);
+ * }
+ */
+
+async getInitiativeCountByStatus(status:string):Promise<number>{
+  const { count, error } = await this.supabase
+  .from("pages")
+  .select('*', { count: 'exact', head: true }).eq('status',status);
+  return count ?? 0;
+}
+
 /**
  * Asynchronously fetches the user role using the "get_role" RPC function.
  * @returns A Promise that resolves to the user role.
@@ -656,5 +675,44 @@ async  getRole(): Promise<UserRole> {
     throw error;
   }
 }
+
+/**
+ * Asynchronously fetches certificates associated with a specified institution from the "certificates" table.
+ *
+ * @param {string} institutionId - The unique identifier of the institution for which to fetch certificates.
+ * @returns {Promise<CertificateModel[]>} A promise that resolves to an array of CertificateModel instances representing the certificates associated with the specified institution.
+ *
+ * @throws {Error} If there is an issue with the Supabase query or if an error occurs during execution.
+ *
+ * @example
+ * // Usage example:
+ * try {
+ *   const institutionId = 'exampleInstitutionId';
+ *   const certificates = await fetchCertificates(institutionId);
+ *   console.log('Certificates:', certificates);
+ * } catch (error) {
+ *   console.error(`Error fetching certificates: ${error.message}`);
+ * }
+ */
+async fetchCertificates(institutionId:string): Promise<CertificateModel[]> {
+  try {
+    // Make an RPC call to execute the "get_role" function
+    const { data, error } = await this.supabase.from('certificates').select().eq('institution_id',institutionId);
+
+    if (error) {
+      // Throw an error if there's an issue with the RPC call
+      throw error;
+    } else {
+      return data.map((e)=>new CertificateModel(e));
+    }
+  } catch (error) {
+    // Log and rethrow the error for better debugging
+    console.error('Error in getRole:', error);
+    throw error;
+  }
+}
+
+
+
 
 }

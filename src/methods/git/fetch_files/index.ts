@@ -12,7 +12,7 @@ export default async function fetchFiles(supabase: SupabaseClient, dir: string):
   try {
     // const url = `https://asia-south1-esgedu-740d2.cloudfunctions.net/git-api/?list=${dir}`;
     // const response: AxiosResponse<InitiativeModel[]> = await axios.post(url);
-    const { data, error } = await supabase.from("pages").select();
+    const { data, error } = await supabase.from("pages").select().ilike(`path`,`${dir}%`);
     
     if (error) {
       throw error;
@@ -41,7 +41,7 @@ export async function searchFiles(supabase: SupabaseClient, dir: string, composi
   try {
     // const url = `https://asia-south1-esgedu-740d2.cloudfunctions.net/git-api/?list=${dir}`;
     // const response: AxiosResponse<InitiativeModel[]> = await axios.post(url);
-    const { data, error } = await supabase.from("pages").select().ilike(`${compositeFilter?.field_name ?? ""}`, `%${compositeFilter?.key ?? "name"}%`);
+    const { data, error } = await supabase.from("pages").select().ilike(`path`,`${dir}%`).ilike(`${compositeFilter?.field_name ?? ""}`, `%${compositeFilter?.key ?? "name"}%`);
     
     if (error) {
       throw error;
